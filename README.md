@@ -4,3 +4,5 @@ Simple image processor to be deployed on lambda, changes format to avif and resi
 
 flask --app app.py run --debug
 d
+
+-- workflow test
