@@ -70,10 +70,12 @@ jobs:
           EOF
 
       - name: Update Lambda
+        env:
+          FUNCTION_NAME: ${{secrets.FUNCTION_NAME}}
         run: |
           aws lambda update-function-configuration \
-              --function-name ${{secrets.FUNCTION_NAME}}}} \
+              --function-name  "$FUNCTION_NAME" \
               --environment file://env.json
           aws lambda update-function-code \
-              --function-name ${{secrets.FUNCTION_NAME}} \
+              --function-name "$FUNCTION_NAME"  \
               --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
