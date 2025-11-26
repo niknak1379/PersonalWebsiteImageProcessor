@@ -1,23 +1,17 @@
-# Use an official Python runtime as a parent image
-FROM python:3.15.0a2-alpine
+FROM public.ecr.aws/lambda/python:3.13.2025.11.22.14
 
-# Set the working directory in the container
-WORKDIR /app
+# Install system dependencies for Pillow
+RUN dnf install -y \
+    libjpeg-devel \
+    zlib-devel \
+    libpng-devel \
+    && dnf clean all
 
-# Copy the requirements file into the container at /app
-COPY requirements.txt .
+# Copy requirements
+COPY requirements.txt ${LAMBDA_TASK_ROOT}/
 
-# Install any needed packages specified in requirements.txt
-RUN apk add -u zlib-dev jpeg-dev gcc musl-dev
-RUN python -m pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r ${LAMBDA_TASK_ROOT}/requirements.txt
 
-# Copy the rest of the application code into the container at /app
-COPY . .
+COPY lambda_handler.py ${LAMBDA_TASK_ROOT}/
 
-# Expose the port your app runs on
-EXPOSE 5000
-
-
-# Run the application
-CMD ["python", "app.py"]
+CMD ["lambda_handler.handler"]
