@@ -54,8 +54,26 @@ jobs:
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-      - name: update
+      - name: Create env config
         run: |
+          cat > env.json << EOF
+          {
+            "Variables": {
+              "S3_BUCKET_NAME": "${{secrets.S3_BUCKET_NAME}}",
+              "S3_BUCKET_REGION": "${{secrets.S3_BUCKET_REGION}}",
+              "S3_ACCESS_KEY": "${{secrets.S3_ACCESS_KEY}}",
+              "S3_SECRET_ACCESS_KEY": "${{secrets.S3_SECRET_ACCESS_KEY}}",
+              "S3_PROJECT_DIR": "${{secrets.S3_PROJECT_DIR}}",
+              "S3_PREFIX": "${{secrets.S3_PREFIX}}"
+            }
+          }
+          EOF
+
+      - name: Update Lambda
+        run: |
+          aws lambda update-function-configuration \
+              --function-name my-function \
+              --environment file://env.json
           aws lambda update-function-code \
               --function-name ${{secrets.FUNCTION_NAME}} \
-              --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMG_TAG
+              --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
