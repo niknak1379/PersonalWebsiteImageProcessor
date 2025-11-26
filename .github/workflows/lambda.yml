@@ -72,6 +72,9 @@ jobs:
       - name: Update Lambda
         env:
           FUNCTION_NAME: ${{secrets.FUNCTION_NAME}}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: "nikanostovan/pwip"
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           aws lambda update-function-configuration \
               --function-name  "$FUNCTION_NAME" \
