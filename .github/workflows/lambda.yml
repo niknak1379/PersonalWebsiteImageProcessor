@@ -72,7 +72,7 @@ jobs:
       - name: Update Lambda
         run: |
           aws lambda update-function-configuration \
-              --function-name my-function \
+              --function-name ${{secrets.FUNCTION_NAME}}}} \
               --environment file://env.json
           aws lambda update-function-code \
               --function-name ${{secrets.FUNCTION_NAME}} \
